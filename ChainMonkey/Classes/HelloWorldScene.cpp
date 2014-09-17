@@ -46,6 +46,7 @@ bool HelloWorld::init()
     restart = false;
     maxScore = 0;
     enableHold = false;
+    isFallDownDone = true;
         /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
@@ -219,6 +220,7 @@ void HelloWorld::initLine(float x, float y, int lenth)
         
         UserData* _data = new UserData;
         _data->n = createLinePointTime;
+        _data->pointIndex = i;
         Sprite* _sp = NULL;
         if(i != lenth-1)
         {
@@ -417,7 +419,7 @@ void HelloWorld::createMonkey(b2Body* body)
         //向世界申请一个物体
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(body->GetPosition().x, body->GetPosition().y  -2); //初始位置
+        bodyDef.position.Set(body->GetPosition().x, body->GetPosition().y  -3); //初始位置
         monkey = mWorld->CreateBody(&bodyDef);
         
         GB2ShapeCache* cache	=	GB2ShapeCache::sharedGB2ShapeCache();
@@ -439,9 +441,9 @@ void HelloWorld::createMonkey(b2Body* body)
     
     createMonkeyJoint(body,b2Vec2(0,0));
 }
-void HelloWorld::createMonkeyJoint(b2Body* body,b2Vec2 point)
+void HelloWorld::createMonkeyJoint(b2Body* body,b2Vec2 point, float length)
 {
-    body->SetBullet(true);
+    //body->SetBullet(true);
    // b2Vec2 anchor(body->GetPosition().x, body->GetPosition().y );//节点位置,世界坐标
     
 //    b2RevoluteJointDef jd;
@@ -462,7 +464,12 @@ void HelloWorld::createMonkeyJoint(b2Body* body,b2Vec2 point)
     p1 = jd.bodyA->GetWorldPoint(jd.localAnchorA);
     p2 = jd.bodyB->GetWorldPoint(jd.localAnchorB);
     d = p2 - p1;
-    jd.length = d.Length();
+    if (length<0) {
+        jd.length = d.Length();
+    }else{
+        jd.length = length;
+    }
+    
     jd.collideConnected = true;//设置是否碰撞
     mWorld->CreateJoint(&jd);
     
@@ -520,11 +527,25 @@ void HelloWorld::removeFirstLine()
 }
 void HelloWorld::fallDown()
 {
-    
+    fallDownLineIndex = getCurrentLineIndex();
+    fallDownPointIndex = getCurrentPointIndex();
+    fallDownLineLenth = (int)linePoints[fallDownLineIndex]->size();
+    fallDownLien = linePoints[fallDownLineIndex];
+    isFallDownDone = false;
+    this->schedule(SEL_SCHEDULE(&HelloWorld::fallDownSchedule), 1/10.0);
 }
 void HelloWorld::fallDownSchedule(float dt)
 {
     
+    
+    fallDownPointIndex++;
+    if (fallDownPointIndex >= fallDownLineLenth) {
+        this->unschedule(SEL_SCHEDULE(&HelloWorld::fallDownSchedule));
+        isFallDownDone = true;
+        return;
+    }
+    removeAllMonkeyJoint();
+    createMonkeyJoint((*fallDownLien)[fallDownPointIndex], fallDownOffPoint, 0.5f);
 }
 void HelloWorld::onAcceleration(Acceleration* acc, Event* unused_event)
 {
@@ -675,6 +696,11 @@ int HelloWorld::getCurrentLineIndex()
 {
     return ((UserData*)(monkey->GetJointList()->other->GetUserData()))->n - deleteLinePointTime;
 }
+int HelloWorld::getCurrentPointIndex()
+{
+    return ((UserData*)(monkey->GetJointList()->other->GetUserData()))->pointIndex;
+}
+
 void HelloWorld::BeginContact(b2Contact* contact)
 {
     CCLOG("reMark");
@@ -688,11 +714,11 @@ void HelloWorld::BeginContact(b2Contact* contact)
     }
 
     removeAllMonkeyJoint();
-    
+    fallDownOffPoint =contact->GetManifold()->localPoint;
     if((contact->GetFixtureA()->GetFilterData().categoryBits == ballMark)&&(contact->GetFixtureB()->GetFilterData().categoryBits == lineMark))
     {
         b2Body* body = contact->GetFixtureB()->GetBody();
-        createMonkeyJoint(body, contact->GetManifold()->localPoint);
+        createMonkeyJoint(body, fallDownOffPoint);
         
         if (oldLine) {
             enableLineHold();
@@ -708,7 +734,7 @@ void HelloWorld::BeginContact(b2Contact* contact)
     else if ((contact->GetFixtureB()->GetFilterData().categoryBits == ballMark)&&(contact->GetFixtureA()->GetFilterData().categoryBits == lineMark)) {
         b2Body* body = contact->GetFixtureA()->GetBody();
         
-        createMonkeyJoint(body, contact->GetManifold()->localPoint);
+        createMonkeyJoint(body, fallDownOffPoint);
         
         if (oldLine) {
             enableLineHold();
@@ -723,6 +749,9 @@ void HelloWorld::BeginContact(b2Contact* contact)
     }
     
 
+    if (enableHold == false && monkey->GetJointList()->other != getLinePoints(getCurrentLineIndex(), -1) ) {//说明有连接并且不是最后一个
+        fallDown();
+    }
 }
 void HelloWorld::EndContact(b2Contact* contact)
 {
@@ -738,6 +767,9 @@ void HelloWorld::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 }
 bool HelloWorld::onTouchBegan(Touch* touch, Event* event){
     
+    //this->unschedule(SEL_SCHEDULE(&HelloWorld::fallDownSchedule));
+    
+    
     if (restart == true)
     {
         this->runAction(Sequence::create(CallFunc::create([this](){_eventDispatcher->removeAllEventListeners();
@@ -746,16 +778,18 @@ bool HelloWorld::onTouchBegan(Touch* touch, Event* event){
             Director::getInstance()->replaceScene(scene);}), NULL));
         
     }
+    
+    if (!isFallDownDone) {
+        return false;
+    }
+    
     auto touchLocation = touch->getLocation();
     
     auto nodePosition = convertToNodeSpace( touchLocation );//视图层不是当前场景大小, 所以需要转换视图
     log("Box2DView::onTouchBegan, pos: %f,%f -> %f,%f", touchLocation.x, touchLocation.y, nodePosition.x, nodePosition.y);
     
     
-    if (enableHold == false && monkey->GetJointList()->other != getLinePoints(getCurrentLineIndex(), -1) ) {//说明有连接并且不是最后一个
-        fallDown();
-        return true;
-    }
+   
     
     
     

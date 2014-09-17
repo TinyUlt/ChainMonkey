@@ -14,6 +14,7 @@ class UserData
 public:
     Sprite* sp;
     int n;
+    int pointIndex;
 };
 class HelloWorld : public cocos2d::Layer,public b2ContactListener
 {
@@ -50,7 +51,7 @@ public:
     //创建水果
     void createMonkey(b2Body* body);
     //创建水果连接线
-    void createMonkeyJoint(b2Body* body,b2Vec2 point);
+    void createMonkeyJoint(b2Body* body,b2Vec2 point, float length = -1);
     //创建一个天花板
     void createTopWall(b2Body* body);
     //一半的几率
@@ -73,13 +74,17 @@ public:
     void removeAllMonkeyJoint();
     //
     int getCurrentLineIndex();
+    int getCurrentPointIndex();
+    //int getCurrenLineLenth();
     
     void fallDown();
     void fallDownSchedule(float dt);
     b2Vec2 fallDownOffPoint;
-    int lineIndex;
-    int pointIndex;
-    
+    int fallDownLineIndex;
+    int fallDownPointIndex;
+    int fallDownLineLenth;
+    vector<b2Body*>* fallDownLien;
+    bool isFallDownDone;
     
     //重力世界
     b2World* mWorld;
