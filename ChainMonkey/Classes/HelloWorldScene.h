@@ -49,7 +49,7 @@ public:
     //创建一条线 调用initLine
     void createLine();
     //创建水果
-    void createMonkey(b2Body* body);
+    void createMonkey();
     //创建水果连接线
     void createMonkeyJoint(b2Body* body,b2Vec2 point, float length = -1);
     //创建一个天花板
@@ -131,6 +131,8 @@ public:
     Menu* menu;
     //Vec2 oldMinPosition;
     bool enableHold;
+    
+    b2Body* oldHead;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

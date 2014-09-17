@@ -45,8 +45,9 @@ bool HelloWorld::init()
     oldLine = NULL;
     restart = false;
     maxScore = 0;
-    enableHold = false;
+    enableHold = true;
     isFallDownDone = true;
+    oldHead = NULL;
         /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
@@ -151,7 +152,8 @@ bool HelloWorld::init()
         //(*(oldLine->end()))->set
  //   }
     //vector<b2Body*> *points = linePoints[0];
-    createMonkey(getLinePoints(0, -1));
+    createMonkey();
+    //fallDown();
     //createScore(getLinePoints(1, -1)->GetPosition().x, getLinePoints(1, -1)->GetPosition().y, 2);
     
     {
@@ -381,7 +383,7 @@ void HelloWorld::createLine()
 
     initLine(_temp->GetPosition().x + space, y, lenth);
 }
-void HelloWorld::createMonkey(b2Body* body)
+void HelloWorld::createMonkey()
 {
     /*
     
@@ -419,7 +421,7 @@ void HelloWorld::createMonkey(b2Body* body)
         //向世界申请一个物体
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(body->GetPosition().x, body->GetPosition().y  -3); //初始位置
+        bodyDef.position.Set(0,0); //初始位置
         monkey = mWorld->CreateBody(&bodyDef);
         
         GB2ShapeCache* cache	=	GB2ShapeCache::sharedGB2ShapeCache();
@@ -435,11 +437,12 @@ void HelloWorld::createMonkey(b2Body* body)
         birdSp->setPosition(Vec2(0,-100));
         
         monkey->SetUserData(birdSp);
+        monkey->ApplyLinearImpulse(b2Vec2(30,70), b2Vec2(0,0), true);
         //bodys.push_back(birdBody);
     }
 
     
-    createMonkeyJoint(body,b2Vec2(0,0));
+    //createMonkeyJoint(body,b2Vec2(0,0));
 }
 void HelloWorld::createMonkeyJoint(b2Body* body,b2Vec2 point, float length)
 {
@@ -767,39 +770,6 @@ void HelloWorld::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 }
 bool HelloWorld::onTouchBegan(Touch* touch, Event* event){
     
-    //this->unschedule(SEL_SCHEDULE(&HelloWorld::fallDownSchedule));
-    
-    
-    if (restart == true)
-    {
-        this->runAction(Sequence::create(CallFunc::create([this](){_eventDispatcher->removeAllEventListeners();
-            this->removeFromParentAndCleanup(true);
-            auto scene = HelloWorld::createScene();
-            Director::getInstance()->replaceScene(scene);}), NULL));
-        
-    }
-    
-    if (!isFallDownDone) {
-        return false;
-    }
-    
-    auto touchLocation = touch->getLocation();
-    
-    auto nodePosition = convertToNodeSpace( touchLocation );//视图层不是当前场景大小, 所以需要转换视图
-    log("Box2DView::onTouchBegan, pos: %f,%f -> %f,%f", touchLocation.x, touchLocation.y, nodePosition.x, nodePosition.y);
-    
-    
-   
-    
-    
-    
-    removeAllMonkeyJoint();
-    
-    
-   
-    
-    
-    enableHold = true;
    // monkey->GetJointList()
     
     return true; //MouseDown(b2Vec2(nodePosition.x*PTM_RATIO,nodePosition.y*PTM_RATIO));
@@ -811,59 +781,7 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event){
     
     log("Box2DView::onTouchMoved, pos: %f,%f -> %f,%f", touchLocation.x, touchLocation.y, nodePosition.x, nodePosition.y);
     
-    
-//    //向世界申请一个球
-//    b2BodyDef bodyDef0;
-//    bodyDef0.type = b2_dynamicBody;
-//    bodyDef0.position.Set(20, 20); //初始位置
-//    monkey = mWorld->CreateBody(&bodyDef0);
-//    
-//    //申请到之后设置物体属性
-//    {
-//        b2CircleShape shape;
-//        shape.m_radius = 1.0f;
-//        
-//        b2FixtureDef fixtureDef;
-//        fixtureDef.shape = & shape;
-//        fixtureDef.density = 0.2f;
-//        fixtureDef.friction = 0.3f;
-//        fixtureDef.restitution = 1.0f;
-//        fixtureDef.filter.categoryBits = ballMark;
-//        fixtureDef.filter.maskBits = topWallMark | lineMark;
-//        
-//        monkey->CreateFixture(&fixtureDef);
-//    }
-//    
-//    //向世界申请一个球
-//    b2BodyDef bodyDef;
-//    bodyDef.type = b2_dynamicBody;
-//    bodyDef.position.Set(25, 25); //初始位置
-//    b2Body* monkey2 = mWorld->CreateBody(&bodyDef);
-//    
-//    //申请到之后设置物体属性
-//    {
-//        b2CircleShape shape;
-//        shape.m_radius = 1.0f;
-//        
-//        b2FixtureDef fixtureDef;
-//        fixtureDef.shape = & shape;
-//        fixtureDef.density = 0.2f;
-//        fixtureDef.friction = 0.3f;
-//        fixtureDef.restitution = 1.0f;
-//        fixtureDef.filter.categoryBits = ballMark;
-//        fixtureDef.filter.maskBits = topWallMark | lineMark;
-//        
-//        monkey2->CreateFixture(&fixtureDef);
-//    }
-//    b2RevoluteJointDef jd;
-//    b2Vec2 anchor(20, 20 );//节点位置,世界坐标
-//    jd.Initialize(monkey, monkey2, anchor);
-//    mWorld->CreateJoint(&jd);
-//
-    
-    
-    
-    //MouseMove(b2Vec2(nodePosition.x*PTM_RATIO,nodePosition.y*PTM_RATIO));
+
 }
 void HelloWorld::onTouchEnded(Touch* touch, Event* event){
     auto touchLocation = touch->getLocation();
@@ -872,7 +790,40 @@ void HelloWorld::onTouchEnded(Touch* touch, Event* event){
     log("Box2DView::onTouchEnded, pos: %f,%f -> %f,%f", touchLocation.x, touchLocation.y, nodePosition.x, nodePosition.y);
     
     
-    //MouseUp(b2Vec2(nodePosition.x*PTM_RATIO,nodePosition.y*PTM_RATIO));
+    this->unschedule(SEL_SCHEDULE(&HelloWorld::fallDownSchedule));
+    
+    
+    if (restart == true)
+    {
+        this->runAction(Sequence::create(CallFunc::create([this](){_eventDispatcher->removeAllEventListeners();
+            this->removeFromParentAndCleanup(true);
+            auto scene = HelloWorld::createScene();
+            Director::getInstance()->replaceScene(scene);}), NULL));
+        
+    }
+    //
+    //    if (!isFallDownDone) {
+    //        return false;
+    //    }
+    
+//    auto touchLocation = touch->getLocation();
+//    
+//    auto nodePosition = convertToNodeSpace( touchLocation );//视图层不是当前场景大小, 所以需要转换视图
+//    log("Box2DView::onTouchBegan, pos: %f,%f -> %f,%f", touchLocation.x, touchLocation.y, nodePosition.x, nodePosition.y);
+    
+    
+    
+    
+    
+    
+    removeAllMonkeyJoint();
+    
+    
+    
+    
+    
+    enableHold = true;
+
     
 }
 void HelloWorld::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
