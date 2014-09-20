@@ -131,7 +131,8 @@ public:
     Menu* menu;
     //Vec2 oldMinPosition;
     bool enableHold;
-    
+    SpriteBatchNode* batchNode;
+    b2Body* topJointBody;
     b2Body* oldHead;
 };
 

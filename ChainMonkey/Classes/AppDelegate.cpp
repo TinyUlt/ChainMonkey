@@ -1,6 +1,6 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-
+#include <time.h>
 USING_NS_CC;
 
 AppDelegate::AppDelegate() {
@@ -13,6 +13,11 @@ AppDelegate::~AppDelegate()
 
 bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
+    
+
+    int a =time(0);
+    srand(a);
+    
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
