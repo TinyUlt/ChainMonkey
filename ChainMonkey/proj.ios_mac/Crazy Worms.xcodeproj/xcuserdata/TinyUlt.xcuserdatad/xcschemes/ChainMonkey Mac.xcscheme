@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5087E73D17EB910900C73F5D"
-               BuildableName = "ChainMonkey Mac.app"
-               BlueprintName = "ChainMonkey Mac"
-               ReferencedContainer = "container:ChainMonkey.xcodeproj">
+               BuildableName = "Crazy Worms Mac.app"
+               BlueprintName = "Crazy Worms Mac"
+               ReferencedContainer = "container:Crazy Worms.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5087E73D17EB910900C73F5D"
-            BuildableName = "ChainMonkey Mac.app"
-            BlueprintName = "ChainMonkey Mac"
-            ReferencedContainer = "container:ChainMonkey.xcodeproj">
+            BuildableName = "Crazy Worms Mac.app"
+            BlueprintName = "Crazy Worms Mac"
+            ReferencedContainer = "container:Crazy Worms.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -52,9 +52,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5087E73D17EB910900C73F5D"
-            BuildableName = "ChainMonkey Mac.app"
-            BlueprintName = "ChainMonkey Mac"
-            ReferencedContainer = "container:ChainMonkey.xcodeproj">
+            BuildableName = "Crazy Worms Mac.app"
+            BlueprintName = "Crazy Worms Mac"
+            ReferencedContainer = "container:Crazy Worms.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -70,9 +70,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5087E73D17EB910900C73F5D"
-            BuildableName = "ChainMonkey Mac.app"
-            BlueprintName = "ChainMonkey Mac"
-            ReferencedContainer = "container:ChainMonkey.xcodeproj">
+            BuildableName = "Crazy Worms Mac.app"
+            BlueprintName = "Crazy Worms Mac"
+            ReferencedContainer = "container:Crazy Worms.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

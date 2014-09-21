@@ -1,6 +1,7 @@
 #include "HelloWorldScene.h"
 #include "GB2ShapeCache-x.h"
 #include "../proj.ios_mac/ios/FileOperation.h"
+#include "CCUserDefault.h"
 USING_NS_CC;
 #define wallHight (winSize.y -62)*PTM_RATIO
 const int topWallMark = 1 << 0;
@@ -125,9 +126,9 @@ bool HelloWorld::init()
         b2Vec2 gravity;
         gravity.Set(0.0f, -50.0f); //一个向下10单位的向量，作为重力减速度，Box2D中默认的单位是秒和米
         mWorld = new b2World(gravity); // 创建一个有重力加速度的世界
-        m_debugDraw = new GLESDebugDraw(1/PTM_RATIO);   //这里新建一个 debug渲染模块
+        //m_debugDraw = new GLESDebugDraw(1/PTM_RATIO);   //这里新建一个 debug渲染模块
         //mWorld->SetDebugDraw(m_debugDraw);    //设置
-        uint32 flags = 0;
+        //uint32 flags = 0;
         //flags += b2Draw::e_shapeBit ;
         //flags += b2Draw::e_centerOfMassBit;   //获取需要显示debugdraw的块
         //flags += b2Draw::e_aabbBit;  //AABB块
@@ -135,8 +136,8 @@ bool HelloWorld::init()
         //flags += b2Draw::e_jointBit;  //关节
         //flags += b2Draw::e_shapeBit;   //形状
         //flags += b2Draw::e_centerOfMassBit;
-        m_debugDraw->SetFlags(flags);   //需要显示那些东西
-        mWorld->SetDebugDraw(m_debugDraw);
+        //m_debugDraw->SetFlags(flags);   //需要显示那些东西
+        //mWorld->SetDebugDraw(m_debugDraw);
         mWorld->SetContactListener(this);
     }
     
@@ -182,20 +183,15 @@ bool HelloWorld::init()
     }
     
 
-    //关节旋转
-//    for(int j = 0 ; j < 1; j++)
-//    {
-        const float32 x = topWall->GetPosition().x +10;
-        const float32 y = topWall->GetPosition().y-0.5 ;
-        int lenth = 22;
-        initLine(x, y, lenth);
-        oldLine = linePoints[0];
-        //(*(oldLine->end()))->set
- //   }
-    //vector<b2Body*> *points = linePoints[0];
+
+    const float32 x = topWall->GetPosition().x +10;
+    const float32 y = topWall->GetPosition().y-0.5 ;
+    int lenth = 22;
+    initLine(x, y, lenth);
+    oldLine = linePoints[0];
+
     createMonkey();
-    //fallDown();
-    //createScore(getLinePoints(1, -1)->GetPosition().x, getLinePoints(1, -1)->GetPosition().y, 2);
+
     
     {
         Device::setAccelerometerEnabled(true);
@@ -254,11 +250,7 @@ void HelloWorld::initLine(float x, float y, int lenth)
         b2BodyDef bd;
         bd.type = b2_dynamicBody;
         bd.position.Set( x ,  y - 0.6 * i-0.1 );//世界坐标
-        
-        if(i == lenth-1)
-        {
-            //bd.position.Set( x ,  y - 0.6 * i-0.3 );
-        }
+  
         b2Body* body = mWorld->CreateBody(&bd);
         
         UserData* _data = new UserData;
@@ -267,45 +259,18 @@ void HelloWorld::initLine(float x, float y, int lenth)
         Sprite* _sp = NULL;
         _data->sp = _sp;
 
-//        if(i != lenth-1)
-//        {
-////            _sp = Sprite::create("body.png");
-////            this->addChild(_sp);
-////            _data->sp = _sp;
-////            _sp->setPosition(Vec2(body->GetPosition().x / PTM_RATIO, body->GetPosition().y / PTM_RATIO));
-////            _sp->setRotation(10);
-////            _sp->setScale(0.5);
-//            if (linePoints.size() == 0) {
-//                fd.filter.maskBits = topWallMark ;
-//            }
-//        }
-//        else
-//        {
-//            shape.m_radius = 0.5;
-//            
-////            _sp = Sprite::create("head.png");
-////            this->addChild(_sp);
-////            _data->sp = _sp;
-////            _sp->setPosition(Vec2(body->GetPosition().x / PTM_RATIO, body->GetPosition().y / PTM_RATIO));
-////            _sp->setRotation(10);
-////            _sp->setScale(0.5);
-//            if (linePoints.size() == 0) {
-//                fd.filter.maskBits = topWallMark ;
-//            }
-//
-//        }
         if (i == 0) {
             _sp = Sprite::create("tail0.png");
             _sp->setScale(0.7);
-            _sp->setAnchorPoint(Vec2(0.5,0.3));
+            _sp->setAnchorPoint(Vec2(0.5,0.4));
             this->addChild(_sp);
         }
         else if(i == lenth-1)
         {
             _sp = Sprite::create("head0.png");
-            _sp->setScale(0.8);
+            _sp->setScale(0.7);
             this->addChild(_sp);
-            _sp->setAnchorPoint(Vec2(0.5,0.7));
+            _sp->setAnchorPoint(Vec2(0.5,0.6));
         }
         else{
             _sp = Sprite::create("head3.png");
@@ -314,21 +279,11 @@ void HelloWorld::initLine(float x, float y, int lenth)
         }
         _data->sp = _sp;
         _sp->setPosition(Vec2(body->GetPosition().x / PTM_RATIO, body->GetPosition().y / PTM_RATIO));
-        //_sp->setRotation(10);
-        //_sp->setScale(0.5);
+
         body->SetUserData(_data);
         
-        //GB2ShapeCache::sharedGB2ShapeCache()->addShapesWithFile("worm.plist");
-
-        
-        //GB2ShapeCache* cache	=	GB2ShapeCache::sharedGB2ShapeCache();
-        
-        
-        
-        //cache->addFixturesToBody(body,"body");
-        
         body->CreateFixture(&fd);
-        
+        body->SetSleepingAllowed(true);
         //创建有弹力的连接线
         b2DistanceJointDef jd;
         b2Vec2 p1, p2, d;
@@ -349,28 +304,14 @@ void HelloWorld::initLine(float x, float y, int lenth)
         jd.length = d.Length();
         mWorld->CreateJoint(&jd);
         
-        //if (i  != lenth - 1) {
-            jd.length = 0;
-            jd.localAnchorA.Set(0.0, -0.3);
-            if (i ==0) {
-                jd.localAnchorA.Set(x, 0);
-            }
-            jd.localAnchorB.Set(0.0, 0.3);
+        jd.length = 0;
+        jd.localAnchorA.Set(0.0, -0.3);
+        if (i ==0) {
+            jd.localAnchorA.Set(x, 0);
+        }
+        jd.localAnchorB.Set(0.0, 0.3);
             
-            mWorld->CreateJoint(&jd);
-
-       // }
-//        mWorld->CreateJoint(&jd);
-//        mWorld->CreateJoint(&jd);
-
-        
-        
-//        jd.localAnchorA.Set(-0.5, 0);
-//        if (i ==0) {
-//            jd.localAnchorA.Set(x, 0);
-//        }
-//        jd.localAnchorB.Set(-0.5, 0);
-//        mWorld->CreateJoint(&jd);
+        mWorld->CreateJoint(&jd);
 
         
         prevBody = body;
@@ -379,10 +320,8 @@ void HelloWorld::initLine(float x, float y, int lenth)
         
         
     }
-//    int _r = CCRANDOM_0_1()*5;
-//    if ( _r!= 0) {
-        createTopWall((*points)[0]);
-//    }
+
+    createTopWall((*points)[0]);
     
 
     createScore((*points)[0], score);
@@ -413,104 +352,135 @@ void HelloWorld::createLine()
     int lenth ;
     
     float _y =0;
-//    if (randomHalf()) {
-//        _y = CCRANDOM_0_1()*5;
-//    }
-//    else
-//    {
-//        _y = 0;
-//    }
     const float32 y = wallHight-0.5 - _y ;
-    //if (createLinePointTime<10) {
-        //space = 7;
-        lenth = CCRANDOM_0_1()* 5+ 20;//叶子
-    //}
-//    else if(createLinePointTime<20){
-//        space = 8;
-//        lenth = CCRANDOM_0_1()* 10+ 12;//苹果
-//    }
-//    else if(createLinePointTime<30){
-//        space = 9;
-//        lenth = CCRANDOM_0_1()* 10+ 15;//香蕉
-//    }
-//    else if(createLinePointTime<40){
-//        space = 10;
-//        lenth = CCRANDOM_0_1()* 7+ 18;//
-//    }
-//    else if(createLinePointTime<50){
-//        space = 11;
-//        lenth = CCRANDOM_0_1()* 5 + 20;
-//    }
-//    else if(createLinePointTime<60){
-//        space = 12;
-//        lenth = CCRANDOM_0_1()* 3 + 23;
-//    }
-//    else if(createLinePointTime<70){
-//        space = 13;
-//        lenth = CCRANDOM_0_1()* 2 + 24;
-//    }
-//    else if(createLinePointTime<80){
-//        space = 14;
-//        lenth = CCRANDOM_0_1()* 1 + 24;
-//    }
-//    else if(createLinePointTime<90){
-//        space = 15;
-//        lenth = CCRANDOM_0_1()* 0 + 24;
-//    }
-//    else if(createLinePointTime<110){
-//        space = 16;
-//        lenth = CCRANDOM_0_1()* 0 + 24;
-//    }
-//    else if(createLinePointTime<130){
-//        space = 17;
-//        lenth = CCRANDOM_0_1()* 0 + 24;
-//    }
-//    else if(createLinePointTime<150){
-//        space = 18;
-//        lenth = CCRANDOM_0_1()* 0 + 24;
-//    }
-//    else if(createLinePointTime<180){
-//        space = 19;
-//        lenth = CCRANDOM_0_1()* 0 + 24;
-//    }
-//    else
-//    {
-//        space = 20;
-//        lenth = CCRANDOM_0_1()* 0 + 27;
-//    }
+    
+    if ((*(linePoints.end()-1))->size()<8) {
+        if (createLinePointTime<10) {
+            space = 9;
+            lenth = CCRANDOM_0_1()* 5+ 11;//叶子
+        }
+        else if(createLinePointTime<20){
+            space = 10;
+            lenth = CCRANDOM_0_1()* 5+ 12;//苹果
+        }
+        else if(createLinePointTime<30){
+            space = 11;
+            lenth = CCRANDOM_0_1()* 5+ 13;//香蕉
+        }
+        else if(createLinePointTime<40){
+            space = 12;
+            lenth = CCRANDOM_0_1()* 5+ 14;//
+        }
+        else if(createLinePointTime<50){
+            space = 13;
+            lenth = CCRANDOM_0_1()* 5 + 15;
+        }
+        else if(createLinePointTime<60){
+            space = 14;
+            lenth = CCRANDOM_0_1()* 5 + 16;
+        }
+        else if(createLinePointTime<70){
+            space = 15;
+            lenth = CCRANDOM_0_1()* 5 + 17;
+        }
+        else if(createLinePointTime<80){
+            space = 16;
+            lenth = CCRANDOM_0_1()* 5 + 18;
+        }
+        else if(createLinePointTime<90){
+            space = 17;
+            lenth = CCRANDOM_0_1()* 5 + 19;
+        }
+        else if(createLinePointTime<110){
+            space = 18;
+            lenth = CCRANDOM_0_1()* 5 + 20;
+        }
+        else if(createLinePointTime<130){
+            space = 19;
+            lenth = CCRANDOM_0_1()* 5 + 21;
+        }
+        else if(createLinePointTime<150){
+            space = 20;
+            lenth = CCRANDOM_0_1()* 5 + 22;
+        }
+        else if(createLinePointTime<180){
+            space = 21;
+            lenth = CCRANDOM_0_1()* 5 + 23;
+        }
+        else
+        {
+            space = 22;
+            lenth = CCRANDOM_0_1()* 5 + 24;
+        }
 
+    }
+    else
+    {
+        if (createLinePointTime<10) {
+            space = 9;
+            lenth = CCRANDOM_0_1()* 11+ 8;//叶子
+        }
+        else if(createLinePointTime<20){
+            space = 10;
+            lenth = CCRANDOM_0_1()* 12+ 8;//苹果
+        }
+        else if(createLinePointTime<30){
+            space = 11;
+            lenth = CCRANDOM_0_1()* 13+ 8;//香蕉
+        }
+        else if(createLinePointTime<40){
+            space = 12;
+            lenth = CCRANDOM_0_1()* 14+ 8;//
+        }
+        else if(createLinePointTime<50){
+            space = 13;
+            lenth = CCRANDOM_0_1()* 15 + 8;
+        }
+        else if(createLinePointTime<60){
+            space = 14;
+            lenth = CCRANDOM_0_1()* 16 + 8;
+        }
+        else if(createLinePointTime<70){
+            space = 15;
+            lenth = CCRANDOM_0_1()* 17 + 8;
+        }
+        else if(createLinePointTime<80){
+            space = 16;
+            lenth = CCRANDOM_0_1()* 18 + 8;
+        }
+        else if(createLinePointTime<90){
+            space = 17;
+            lenth = CCRANDOM_0_1()* 19 + 8;
+        }
+        else if(createLinePointTime<110){
+            space = 18;
+            lenth = CCRANDOM_0_1()* 20 + 8;
+        }
+        else if(createLinePointTime<130){
+            space = 19;
+            lenth = CCRANDOM_0_1()* 20 + 8;
+        }
+        else if(createLinePointTime<150){
+            space = 20;
+            lenth = CCRANDOM_0_1()* 20 + 8;
+        }
+        else if(createLinePointTime<180){
+            space = 21;
+            lenth = CCRANDOM_0_1()* 20 + 8;
+        }
+        else
+        {
+            space = 22;
+            lenth = CCRANDOM_0_1()* 20 + 8;
+        }
+
+    }
+    
     initLine(_temp->GetPosition().x + space, y, lenth);
 }
 void HelloWorld::createMonkey()
 {
-    /*
-    
-    b2BodyDef bodyDef0;
-    bodyDef0.type = b2_dynamicBody;
-    bodyDef0.position.Set(body->GetPosition().x, body->GetPosition().y  -1.5); //初始位置
-    monkey = mWorld->CreateBody(&bodyDef0);
-    monkey->SetBullet(true);
-    
-    //申请到之后设置物体属性
-    {
-//        b2CircleShape shape;
-//        shape.m_radius = 1.0f;
 
-        b2PolygonShape shape;
-        shape.SetAsBox(1.0f, 1.0f);
-        
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = & shape;
-        fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.3f;
-        fixtureDef.restitution = 0.5f;
-        fixtureDef.filter.categoryBits = ballMark;
-        fixtureDef.filter.maskBits = topWallMark | lineMark;
-        
-        monkey->CreateFixture(&fixtureDef);
-    }
-    
-    */
     rand();
     int _r = (10.0*rand()/(RAND_MAX+1.0));
     string _name ;
@@ -549,22 +519,13 @@ void HelloWorld::createMonkey()
         
         monkey->SetUserData(birdSp);
         float mass = monkey->GetMass();
-        monkey->ApplyLinearImpulse(b2Vec2(200*mass,100 * mass), b2Vec2(0,0), true);
+        monkey->ApplyLinearImpulse(b2Vec2(300*mass,100 * mass), b2Vec2(0,0), true);
         //bodys.push_back(birdBody);
     }
 
-    
-    //createMonkeyJoint(body,b2Vec2(0,0));
 }
 void HelloWorld::createMonkeyJoint(b2Body* body,b2Vec2 point, float length)
 {
-    //body->SetBullet(true);
-   // b2Vec2 anchor(body->GetPosition().x, body->GetPosition().y );//节点位置,世界坐标
-    
-//    b2RevoluteJointDef jd;
-//    jd.Initialize(monkey, body, point);
-//    holdJoint = mWorld->CreateJoint(&jd);
-    
     //创建连接线
     b2DistanceJointDef jd;
     b2Vec2 p1, p2, d;
@@ -593,23 +554,6 @@ void HelloWorld::createMonkeyJoint(b2Body* body,b2Vec2 point, float length)
 void HelloWorld::createTopWall(b2Body* body)
 {
 //    //向世界申请一个物体
-//    b2BodyDef bodyDef;
-//    bodyDef.position.Set(body->GetPosition().x,topWall->GetPosition().y);
-//    b2Body* wallBody = mWorld->CreateBody(&bodyDef);//添加地面
-//    
-//    //申请到之后设置物体属性
-//    {
-//        b2EdgeShape shape;
-//        b2FixtureDef fd;
-//        fd.shape = &shape;
-//        fd.filter.categoryBits = topWallMark;
-//        fd.filter.maskBits = ballMark | lineMark;
-//        
-//        shape.Set(b2Vec2(-space/2,0), b2Vec2(space/2, 0));
-//        wallBody->CreateFixture(&fd);
-//    }
-//    
-//    walls.push_back(wallBody);
 
 }
 b2Body* HelloWorld::getLinePoints(int indexA, int indexB)
@@ -652,7 +596,6 @@ void HelloWorld::fallDown()
 void HelloWorld::fallDownSchedule(float dt)
 {
     
-    
     fallDownPointIndex++;
     if (fallDownPointIndex >= fallDownLineLenth) {
         this->unschedule(SEL_SCHEDULE(&HelloWorld::fallDownSchedule));
@@ -680,45 +623,15 @@ void HelloWorld::onAcceleration(Acceleration* acc, Event* unused_event)
     CCLOG("%f, %f, %f", acc->x, acc->y, acc->z);
     
 }
-void HelloWorld::removeFirstScore()
-{
 
-}
-void HelloWorld::disableLineHold(b2Body* body)
-{
-//    vector<b2Body*> *_ParentNode = linePoints[(((UserData*)body->GetUserData())->n)-deleteLinePointTime];
-//    for(auto child : *_ParentNode)
-//    {
-//        if(child == *(_ParentNode->end()-1))//&& body != *(_ParentNode->end()-1))
-//           {
-//               break;
-//           }
-//        b2Filter _filter;
-//        _filter.categoryBits = lineMark;
-//        _filter.maskBits = topWallMark;
-//        _filter.groupIndex = -8;
-//        child->GetFixtureList()->SetFilterData(_filter);
-//    }
-}
-void HelloWorld::enableLineHold()
-{
-//    for(auto child : *oldLine)
-//    {
-//        b2Filter _filter;
-//        _filter.categoryBits = lineMark;
-//        _filter.maskBits = topWallMark | ballMark;
-//        _filter.groupIndex = -8;
-//        child->GetFixtureList()->SetFilterData(_filter);
-//    }
-    
-}
+
 void HelloWorld::update(float delta)
 {
     int32 velocityIterations = 10;
     int32 positionIterations = 10;
     
     mWorld->Step(delta, velocityIterations, positionIterations);
-    mWorld->ClearForces();
+    //mWorld->ClearForces();
     
     if (!monkey) {
         return;
@@ -795,6 +708,24 @@ void HelloWorld::update(float delta)
             _label->setPosition(winSize/2 - this->getPosition());
             _label->runAction(RepeatForever::create( Sequence::create(ScaleTo::create(0.1, 0.7),ScaleTo::create(0.8, 1), NULL)));
             this->addChild(_label);
+            
+            //UserDefault::getInstance()->setStringForKey("string", "value1");
+            //std::string ret = UserDefault::getInstance()->getStringForKey("string");
+            
+            //UserDefault::getInstance()->setIntegerForKey("best111",111);
+            int _bestScore = UserDefault::getInstance()->getIntegerForKey("best");
+            if (_bestScore < maxScore) {
+                _bestScore = maxScore;
+                UserDefault::getInstance()->setIntegerForKey("best",_bestScore);
+                }
+            
+            
+            //mLevel = CCUserDefault::getInstance()->getIntegerForKey("level",mLevel);
+            auto _best = LabelTTF::create(CCString::createWithFormat("Best: %d", _bestScore)->getCString(), "Arial", 50);
+            _best->setPosition(winSize/2 - this->getPosition()+ Vec2(300,-50));
+            //_best->runAction(RepeatForever::create( Sequence::create(ScaleTo::create(0.1, 0.7),ScaleTo::create(0.8, 1), NULL)));
+            this->addChild(_best);
+            
             FileOperation::addAd();
         }
         
@@ -847,7 +778,6 @@ void HelloWorld::BeginContact(b2Contact* contact)
         createMonkeyJoint(body, fallDownOffPoint);
         
         if (oldLine) {
-            enableLineHold();
             oldLine = linePoints[(((UserData*)body->GetUserData())->n)-deleteLinePointTime];
         }
         else
@@ -855,7 +785,6 @@ void HelloWorld::BeginContact(b2Contact* contact)
             oldLine = linePoints[(((UserData*)body->GetUserData())->n)-deleteLinePointTime];
         }
         
-        disableLineHold(body);
     }
     else if ((contact->GetFixtureB()->GetFilterData().categoryBits == ballMark)&&(contact->GetFixtureA()->GetFilterData().categoryBits == lineMark)) {
         b2Body* body = contact->GetFixtureA()->GetBody();
@@ -865,7 +794,7 @@ void HelloWorld::BeginContact(b2Contact* contact)
         createMonkeyJoint(body, fallDownOffPoint);
         
         if (oldLine) {
-            enableLineHold();
+
             oldLine = linePoints[(((UserData*)body->GetUserData())->n)-deleteLinePointTime];
         }
         else
@@ -873,7 +802,6 @@ void HelloWorld::BeginContact(b2Contact* contact)
             oldLine = linePoints[(((UserData*)body->GetUserData())->n)-deleteLinePointTime];
         }
         
-        disableLineHold(body);
     }
     
 
@@ -963,17 +891,17 @@ void HelloWorld::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
     ccDrawLine(ccp(0,winSize.y -62),ccp(1000000,winSize.y - 62)); //从00点画到100,100
     
     
-    Director* director = Director::getInstance();
-    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
-    director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
-    director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
-    
-    GL::enableVertexAttribs( cocos2d::GL::VERTEX_ATTRIB_FLAG_POSITION );
-    //m_test->Step(&settings);
-    mWorld->DrawDebugData();
-    CHECK_GL_ERROR_DEBUG();
-    
-    director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+//    Director* director = Director::getInstance();
+//    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
+//    director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+//    director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
+//    
+//    GL::enableVertexAttribs( cocos2d::GL::VERTEX_ATTRIB_FLAG_POSITION );
+//    //m_test->Step(&settings);
+//    mWorld->DrawDebugData();
+//    CHECK_GL_ERROR_DEBUG();
+//    
+//    director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 }
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {

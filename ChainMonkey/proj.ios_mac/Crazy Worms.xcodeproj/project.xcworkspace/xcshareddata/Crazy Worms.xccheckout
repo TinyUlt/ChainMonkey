@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>E6470AB1-D877-49AF-96A2-221C02F4D7E3</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Crazy worms</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>874B874F17E051556E781377031F5692C54E9044</key>
+		<string>https://github.com/TinyUlt/ChainMonkey.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ChainMonkey/proj.ios_mac/Crazy worms.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>874B874F17E051556E781377031F5692C54E9044</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/TinyUlt/ChainMonkey.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>874B874F17E051556E781377031F5692C54E9044</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>874B874F17E051556E781377031F5692C54E9044</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ChainMonkey</string>
+		</dict>
+	</array>
+</dict>
+</plist>

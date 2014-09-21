@@ -62,12 +62,6 @@ public:
     b2Body* getLinePoints(int indexA, int indexB);
     //删除一天线(只能第一个)
     void removeFirstLine();
-    //删除分数
-    void removeFirstScore();
-    //禁止当前绳子再能被抓住
-    void disableLineHold(b2Body* body);
-    //允许之前的那条绳子可以被抓住
-    void enableLineHold();
     //重新开始游戏
     void restartGameCallback();
     //

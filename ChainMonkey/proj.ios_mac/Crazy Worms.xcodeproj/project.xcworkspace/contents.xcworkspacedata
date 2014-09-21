@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:ChainMonkey.xcodeproj">
+      location = "self:Crazy Worms.xcodeproj">
    </FileRef>
 </Workspace>
