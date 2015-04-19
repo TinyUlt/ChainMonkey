@@ -44,7 +44,7 @@ bool HelloWorld::init()
     {
         return false;
     }
-    FileOperation::deletAd();
+   // FileOperation::deletAd();
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -88,7 +88,7 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    title = LabelTTF::create(" Crazy worms", "Arial", 35);
+    title = LabelTTF::create("小小虫", "Arial", 35);
     
     // position the label on the center of the screen
     titleOriglPosition =Vec2(origin.x + visibleSize.width/2,
@@ -106,10 +106,34 @@ bool HelloWorld::init()
 
     this->addChild(_sp,-1);
     
-    LabelTTF* _label = LabelTTF::create("Tilt the device \n and tap screen \n to throw the fruit ", "Arial", 40);
-    this->addChild(_label,-1);
-    _label->setPosition(Vec2(200, winSize.y/2-100));
-    _label->runAction(Sequence::create(DelayTime::create(3), FadeOut::create(2),RemoveSelf::create(), NULL) );
+    {
+        LabelTTF* _label = LabelTTF::create("摆动手机", "STHeitiK-Medium", 30);
+        _label->setOpacity(0);
+        //_label->runAction(FadeIn::create(2));
+        this->addChild(_label,-1);
+        _label->setPosition(Vec2(200, winSize.y/2-100));
+        _label->runAction(Sequence::create(FadeIn::create(1), DelayTime::create(3), FadeOut::create(2),RemoveSelf::create(), NULL) );
+    }
+    
+    {
+        LabelTTF* _label = LabelTTF::create("点击屏幕", "STHeitiK-Medium", 30);
+        _label->setOpacity(0);
+        this->addChild(_label,-1);
+       // _label->runAction(FadeIn::create(2));
+        _label->setPosition(Vec2(200, winSize.y/2-150));
+        _label->runAction(Sequence::create(FadeIn::create(1.5),DelayTime::create(3), FadeOut::create(2),RemoveSelf::create(), NULL) );
+    }
+
+    
+    {
+        LabelTTF* _label = LabelTTF::create("抛射水果", "STHeitiK-Medium", 30);
+        this->addChild(_label,-1);
+        _label->setOpacity(0);
+        _label->setPosition(Vec2(200, winSize.y/2-200));
+        _label->runAction(Sequence::create(FadeIn::create(2),DelayTime::create(3), FadeOut::create(2),RemoveSelf::create(), NULL) );
+    }
+
+    
 
     Sprite * _tap = Sprite::create("tap.png");
     _tap->setPosition(winSize/2- Vec2(-300,300));
@@ -117,10 +141,7 @@ bool HelloWorld::init()
     this->addChild(_tap,-1);
     _tap->runAction(Sequence::create(DelayTime::create(3), FadeOut::create(2),RemoveSelf::create(), NULL) );
 
-    Sprite* _guiji = Sprite::create("fly.png");
-    _guiji->setPosition(winSize/2 - Vec2(-100,0));
-    _guiji->runAction(Sequence::create(DelayTime::create(3), FadeOut::create(2),RemoveSelf::create(), NULL) );
-    this->addChild(_guiji, -1);
+
     //设置地球和绘图
     {
         b2Vec2 gravity;
@@ -157,7 +178,6 @@ bool HelloWorld::init()
             fd.filter.maskBits = ballMark | lineMark;          
             shape.Set(b2Vec2(-winSize.y, 0.0f), b2Vec2(winSize.y*2, 0.0f));
             topWall->CreateFixture(&fd);
- 
 
         }
     }
@@ -177,7 +197,6 @@ bool HelloWorld::init()
             fd.filter.maskBits = ballMark | lineMark;
             shape.Set(b2Vec2(0, 0.0f), b2Vec2(0, 0.0f));
             topJointBody->CreateFixture(&fd);
-            
             
         }
     }
@@ -652,11 +671,7 @@ void HelloWorld::update(float delta)
         removeFirstLine();
         
     }
-//    if (walls[0]->GetPosition().x +5 < - this->getPositionX()*PTM_RATIO) {
-//        b2Body* body = walls[0];
-//        walls.erase(walls.begin());
-//        mWorld->DestroyBody(body);
-//    }
+
    
     for (int i = 0 ;  i < scores.size(); i++) {
         auto child = scores[i];
@@ -709,10 +724,7 @@ void HelloWorld::update(float delta)
             _label->runAction(RepeatForever::create( Sequence::create(ScaleTo::create(0.1, 0.7),ScaleTo::create(0.8, 1), NULL)));
             this->addChild(_label);
             
-            //UserDefault::getInstance()->setStringForKey("string", "value1");
-            //std::string ret = UserDefault::getInstance()->getStringForKey("string");
             
-            //UserDefault::getInstance()->setIntegerForKey("best111",111);
             int _bestScore = UserDefault::getInstance()->getIntegerForKey("best");
             if (_bestScore < maxScore) {
                 _bestScore = maxScore;
@@ -720,13 +732,22 @@ void HelloWorld::update(float delta)
                 }
             
             
+            {
+                LabelTTF* _label = LabelTTF::create("点击屏幕 重新开始", "STHeitiK-Medium", 30);
+                _label->setOpacity(0);
+                this->addChild(_label,-1);
+                // _label->runAction(FadeIn::create(2));
+                _label->setPosition(winSize/2 - this->getPosition()+ Vec2(300,-100));
+                _label->runAction(Sequence::create(FadeIn::create(1.5),DelayTime::create(3), FadeOut::create(2),RemoveSelf::create(), NULL) );
+            }
+            
             //mLevel = CCUserDefault::getInstance()->getIntegerForKey("level",mLevel);
             auto _best = LabelTTF::create(CCString::createWithFormat("Best: %d", _bestScore)->getCString(), "Arial", 50);
             _best->setPosition(winSize/2 - this->getPosition()+ Vec2(300,-50));
             //_best->runAction(RepeatForever::create( Sequence::create(ScaleTo::create(0.1, 0.7),ScaleTo::create(0.8, 1), NULL)));
             this->addChild(_best);
             
-            FileOperation::addAd();
+            //FileOperation::addAd();
         }
         
 
@@ -823,38 +844,13 @@ void HelloWorld::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 }
 bool HelloWorld::onTouchBegan(Touch* touch, Event* event){
     
-    
-   // monkey->GetJointList()
-    
     this->unschedule(SEL_SCHEDULE(&HelloWorld::fallDownSchedule));
-    
-    
-    
-    //
-    //    if (!isFallDownDone) {
-    //        return false;
-    //    }
-    
-    //    auto touchLocation = touch->getLocation();
-    //
-    //    auto nodePosition = convertToNodeSpace( touchLocation );//视图层不是当前场景大小, 所以需要转换视图
-    //    log("Box2DView::onTouchBegan, pos: %f,%f -> %f,%f", touchLocation.x, touchLocation.y, nodePosition.x, nodePosition.y);
-    
-    
-    
-    
-    
     
     removeAllMonkeyJoint();
     
-    
-    
-    
-    
     enableHold = true;
 
-    
-    return true; //MouseDown(b2Vec2(nodePosition.x*PTM_RATIO,nodePosition.y*PTM_RATIO));
+    return true;
     
 }
 void HelloWorld::onTouchMoved(Touch* touch, Event* event){
