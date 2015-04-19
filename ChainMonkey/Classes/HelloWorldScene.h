@@ -49,7 +49,7 @@ public:
     //创建一条线 调用initLine
     void createLine();
     //创建水果
-    void createMonkey(b2Body* body);
+    void createMonkey();
     //创建水果连接线
     void createMonkeyJoint(b2Body* body,b2Vec2 point, float length = -1);
     //创建一个天花板
@@ -62,12 +62,6 @@ public:
     b2Body* getLinePoints(int indexA, int indexB);
     //删除一天线(只能第一个)
     void removeFirstLine();
-    //删除分数
-    void removeFirstScore();
-    //禁止当前绳子再能被抓住
-    void disableLineHold(b2Body* body);
-    //允许之前的那条绳子可以被抓住
-    void enableLineHold();
     //重新开始游戏
     void restartGameCallback();
     //
@@ -131,6 +125,9 @@ public:
     Menu* menu;
     //Vec2 oldMinPosition;
     bool enableHold;
+    SpriteBatchNode* batchNode;
+    b2Body* topJointBody;
+    b2Body* oldHead;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "HelloWorld::createScore(b2Body*, int):HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "scores">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[ADDL bannerViewDidLoadAd:]:ADDL.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "((ADBannerView *)FileOperation::adView).frame.size.width/2">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::disableHold(b2Body*):HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "*((int*)body-&gt;GetUserData())">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::onAcceleration(cocos2d::Acceleration*, cocos2d::Event*):HelloWorldScene.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "FileOperation::addAd():FileOperation.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "(ADBannerView *)adView">
+            </PersistentString>
+            <PersistentString
+               value = "view">
+            </PersistentString>
+            <PersistentString
+               value = "adView">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "non-virtual thunk to HelloWorld::BeginContact(b2Contact*):HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "oldHead">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::update(float):HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;getPositionX()*PTM_RATIO">
+            </PersistentString>
+            <PersistentString
+               value = "getLinePoints(-1, 0)-&gt;GetPosition().x">
+            </PersistentString>
+            <PersistentString
+               value = "getLinePoints(0, 0)-&gt;GetPosition().x">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::createLine():HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "linePoints">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::fallDownSchedule(float):HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "getCurrentLineIndex()">
+            </PersistentString>
+            <PersistentString
+               value = "fallDownPointIndex">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::BeginContact(b2Contact*):HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "contact-&gt;GetManifold()-&gt;localPoint">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::init():HelloWorldScene.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "HelloWorld::removeFirstScore():HelloWorldScene.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "scores">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
